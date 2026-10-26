@@ -35,26 +35,26 @@ See the [demo video](docs/demo/) (49 seconds).
 
 ## Supabase features used
 
-| Feature | How the app uses it | On RDS |
-| --- | --- | --- |
-| Auth | Email and password sign-in. Runs are inserted with the user's own JWT. | Works. |
-| REST API and RLS | Research is readable by everyone, a watchlist only by its owner, and a user can only insert runs as themselves. | Works. Tables need explicit grants to `service_role` (`0013`), and the schema cache has to be reloaded by hand after DDL. |
-| Postgres functions | `claim_task()` and `finish_task()` make Postgres the task queue; `similar_companies()` ranks stacks by vector distance. | Works. Functions that use pgvector have to be `security definer` (`0015`). |
-| Realtime | `postgres_changes` on `evidence`, `agent_tasks` and `research_runs` streams a run to every open browser. | Works, through the proxy on the ECS. |
-| pgvector | An HNSW index on stack embeddings, plus name matching against the technology dictionary. | Works, with types qualified as `extensions.vector`. |
-| pg_cron | `recover_runs()` every minute, `purge_caches()` hourly. | Works once `cron.use_background_workers` is on (off by default, so every run fails with "connection failed"). |
-| Storage | A private `reports` bucket for PDF exports, shared by signed link. | Uploads fail with `403 VirtualHostDomainRequired`, so the app sends the PDF straight to the browser. |
+| Feature            | How the app uses it                                                                                                     | On RDS                                                                                                                    |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Auth               | Email and password sign-in. Runs are inserted with the user's own JWT.                                                  | Works.                                                                                                                    |
+| REST API and RLS   | Research is readable by everyone, a watchlist only by its owner, and a user can only insert runs as themselves.         | Works. Tables need explicit grants to `service_role` (`0013`), and the schema cache has to be reloaded by hand after DDL. |
+| Postgres functions | `claim_task()` and `finish_task()` make Postgres the task queue; `similar_companies()` ranks stacks by vector distance. | Works. Functions that use pgvector have to be `security definer` (`0015`).                                                |
+| Realtime           | `postgres_changes` on `evidence`, `agent_tasks` and `research_runs` streams a run to every open browser.                | Works, through the proxy on the ECS.                                                                                      |
+| pgvector           | An HNSW index on stack embeddings, plus name matching against the technology dictionary.                                | Works, with types qualified as `extensions.vector`.                                                                       |
+| pg_cron            | `recover_runs()` every minute, `purge_caches()` hourly.                                                                 | Works once `cron.use_background_workers` is on (off by default, so every run fails with "connection failed").             |
+| Storage            | A private `reports` bucket for PDF exports, shared by signed link.                                                      | Uploads fail with `403 VirtualHostDomainRequired`, so the app sends the PDF straight to the browser.                      |
 
 [docs/deploy-huawei-cloud.md](docs/deploy-huawei-cloud.md) has the full setup and every
 workaround.
 
 ## How a run works
 
-| Agent | Reads | Finds |
-| --- | --- | --- |
-| Web Footprint | DNS (MX, TXT, NS, CNAME, A), certificate transparency logs, published cloud IP ranges, the homepage | Hosting and cloud per host, CDN and WAF, email provider, SaaS domain verifications, frontend framework |
-| Job Postings | Public Greenhouse, Lever and Ashby boards, the careers page, and web search at the same time (results that robots.txt disallows, such as LinkedIn, are dropped) | Languages, frameworks, databases and infrastructure in job requirements |
-| Engineering Blog | The blog's RSS/Atom feed or sitemap, then web search | What runs in production, what was migrated to and away from |
+| Agent            | Reads                                                                                                                                                           | Finds                                                                                                  |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Web Footprint    | DNS (MX, TXT, NS, CNAME, A), certificate transparency logs, published cloud IP ranges, the homepage                                                             | Hosting and cloud per host, CDN and WAF, email provider, SaaS domain verifications, frontend framework |
+| Job Postings     | Public Greenhouse, Lever and Ashby boards, the careers page, and web search at the same time (results that robots.txt disallows, such as LinkedIn, are dropped) | Languages, frameworks, databases and infrastructure in job requirements                                |
+| Engineering Blog | The blog's RSS/Atom feed or sitemap, then web search                                                                                                            | What runs in production, what was migrated to and away from                                            |
 
 - **Agents are fixed pipelines**, not tool-calling loops: probe, search, fetch, filter,
   extract, with the LLM called at fixed steps. Each has a budget of 60 seconds, 5 searches,

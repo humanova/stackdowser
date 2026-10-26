@@ -60,11 +60,13 @@ function camel(name: string) {
 }
 
 function build(nodes: ChildNode[]): ReactNode[] {
-  return nodes.filter((n): n is Element => "attribs" in n && n.type === "tag").map((el, i) => {
-    const Component = ELEMENTS[el.name];
-    if (!Component) throw new Unsupported(el.name);
-    return <Component {...props(el, i)}>{build(el.children as ChildNode[])}</Component>;
-  });
+  return nodes
+    .filter((n): n is Element => "attribs" in n && n.type === "tag")
+    .map((el, i) => {
+      const Component = ELEMENTS[el.name];
+      if (!Component) throw new Unsupported(el.name);
+      return <Component {...props(el, i)}>{build(el.children as ChildNode[])}</Component>;
+    });
 }
 
 export function svgChildren(body: string): ReactNode[] | null {
