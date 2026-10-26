@@ -17,7 +17,7 @@ reference deployment a run takes 20 to 60 seconds.
 > guide, and it held up well. The rough edges are in
 > [docs/deploy-huawei-cloud.md](docs/deploy-huawei-cloud.md).
 
-See the [demo video](docs/demo.mp4) (49 seconds).
+See the [demo video](docs/demo/) (49 seconds).
 
 ## Architecture
 
