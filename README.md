@@ -12,7 +12,7 @@ reference deployment a run takes 20 to 60 seconds.
 
 ![A finished run: Datadog's stack by category, with the evidence count and score of each technology](docs/screenshots/run.png)
 
-> Built with Claude Opus 5.5 in about five and a half hours, from the spec to the deployed
+> Built with Claude Opus 5.5 in about 5 hours, from the spec to the deployed
 > demo. Every migration and schema check went through the Supabase MCP setup from Huawei's
 > guide, and it held up well. The rough edges are in
 > [docs/deploy-huawei-cloud.md](docs/deploy-huawei-cloud.md).
