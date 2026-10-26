@@ -5,9 +5,9 @@ which is still in its test phase. It is a real workload rather than a feature ch
 Next.js app and a Node.js worker on an ECS that use Auth, the REST API, RLS, Postgres
 functions, Realtime, Storage, pgvector and pg_cron through one RDS Supabase application.
 
-What the app does: you give it a company, and three agents read public sources (DNS,
-certificate transparency logs, job boards, engineering blogs) to work out what the company
-runs on. Each technology comes with the quote and the link it was found in. On the
+What the app does: you enter a company name. Three agents then read public sources, such
+as DNS records, job boards and engineering blogs, and work out which technologies the
+company uses. Each technology comes with the quote and the link it was found in. On the
 reference deployment a run takes 20 to 60 seconds.
 
 ![A finished run: Datadog's stack by category, with the evidence count and score of each technology](docs/screenshots/run.png)
