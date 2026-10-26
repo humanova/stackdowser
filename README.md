@@ -10,31 +10,28 @@ certificate transparency logs, job boards, engineering blogs) to work out what t
 runs on. Each technology comes with the quote and the link it was found in. On the
 reference deployment a run takes 20 to 60 seconds.
 
-> Built with Claude Opus 5.5 in about five and a half hours, from the spec to the deployed
-> demo, console round-trips included. The database side went through the Supabase MCP setup
-> from Huawei's guide: every migration, schema check and type generation ran through it, and
-> it held up well, give or take a few rough edges noted in
-> [docs/deploy-huawei-cloud.md](docs/deploy-huawei-cloud.md).
-
 ![A finished run: Datadog's stack by category, with the evidence count and score of each technology](docs/screenshots/run.png)
 
-See the [demo video](docs/demo.mp4) (49 seconds): researching Getir, the agents at work, the evidence behind a technology, and the PDF export.
+> Built with Claude Opus 5.5 in about five and a half hours, from the spec to the deployed
+> demo. Every migration and schema check went through the Supabase MCP setup from Huawei's
+> guide, and it held up well. The rough edges are in
+> [docs/deploy-huawei-cloud.md](docs/deploy-huawei-cloud.md).
+
+See the [demo video](docs/demo.mp4) (49 seconds).
 
 ## Architecture
 
 ![Architecture on Huawei Cloud](docs/architecture.png)
 
-Source: [docs/architecture.drawio](docs/architecture.drawio), editable in draw.io.
-
-- **Only port 80 on the ECS is public.** Caddy serves the app and forwards `/rest`,
-  `/auth`, `/realtime` and `/storage` to the API gateway's private address, so neither the
-  gateway nor the database needs a public IP.
-- **Postgres is the queue.** A run fans out into one `agent_tasks` row per agent. Workers
-  claim rows with `FOR UPDATE SKIP LOCKED`, heartbeat while working, and the last task to
-  finish hands the run to the merger exactly once.
-- **Search and embeddings stay inside Docker.** SearXNG (with Tavily as a fallback) and
-  Text Embeddings Inference (Qwen3, 1024 dimensions) listen only on the internal network.
-  The LLM is any OpenAI-compatible API; the reference deployment uses DeepSeek.
+- **One public port.** Only port 80 on the ECS is open. Caddy serves the app and passes
+  Supabase traffic (`/rest`, `/auth`, `/realtime`, `/storage`) to the API gateway over the
+  private network. The gateway and the database have no public IP.
+- **Postgres is the job queue.** Each run creates one task per agent. Workers pick tasks
+  with `FOR UPDATE SKIP LOCKED`, so two workers never take the same one. When the last
+  task finishes, the run moves on to the merge step.
+- **Internal services stay internal.** SearXNG (search) and Text Embeddings Inference
+  (embeddings) run only on the Docker network, with Tavily as the search fallback. The LLM
+  can be any OpenAI-compatible API; this deployment uses DeepSeek.
 
 ## Supabase features used
 
