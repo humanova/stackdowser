@@ -10,6 +10,9 @@ as DNS records, job boards and engineering blogs, and work out which technologie
 company uses. Each technology comes with the quote and the link it was found in. On the
 reference deployment a run takes 20 to 60 seconds.
 
+Also published in Huawei Cloud's official showcase:
+[huaweicloud/rds-postgres-AI-demo](https://github.com/huaweicloud/rds-postgres-AI-demo/tree/rds-supabase-showcase-company-tech-research).
+
 <img src="docs/screenshots/search.png" width="560" alt="The search bar: a company name, an optional domain, and the Investigate button">
 
 ![A finished run: Datadog's stack by category, with the evidence count and score of each technology](docs/screenshots/run.png)
